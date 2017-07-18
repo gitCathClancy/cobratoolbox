@@ -1,8 +1,7 @@
 %% Determining MinSpan vectors of COBRA model
-%% Aarash Bordbar
-% Sinopia Biosciences, San Diego, CA USA
-% 
-% Reviewed by James T. Yurkovich
+%% Author: Aarash Bordbar.
+%% Affiliation: Sinopia Biosciences, San Diego, CA USA
+%% Reviewer: James T. Yurkovich. Catherine Clancy, *LCSB, University of Luxembourg.*
 %% INTRODUCTION
 % In this tutorial, we show how to calculate MinSpan vectors [1] for a COBRA 
 % model. COBRA models are predominantly studied under steady-state conditions, 
@@ -31,12 +30,18 @@
 % The flux directions of a pathway through reversible reactions are shown as irreversible 
 % reactions. 
 %% MATERIALS
+%% *Initialize The COBRA Toolbox.*
+% Initialize The Cobra Toolbox using the |initCobraToolbox| function.
+
+initCobraToolbox
 %% Equipment Setup
 % Running the MinSpan algorithm requires the installation of a mixed-integer 
 % linear programming (MILP) solver. We have used Gurobi v5+ (http://www.gurobi.com/downloads/download-center) 
 % which is freely available for academic use. This tutorial and the algorithm 
 % has been rigorously tested and support Gurobi v5+. |detMinSpan| will not work 
-% with GLPK; other solvers are untested.
+% with GLPK; other solvers are untested. For detailed information on installation 
+% of Gurobi , refer to The Cobra Toolbox <https://github.com/opencobra/cobratoolbox/blob/master/docs/source/installation/solvers.md 
+% solver instalation guide>. 
 %% Implementation
 % For MinSpan vectors to be calculated, the model must (1) consist of only reactions 
 % that are able to carry flux under that particular condition, (2) allow for the 
@@ -50,10 +55,18 @@
 % setting a time limit on the MILP calculation.
 %% Procedure
 % In this example, we will calculate the MinSpan vectors for the _E. coli_ core 
-% network. We begin by initializing the COBRA Toolbox in the MATLAB environment 
-% and loading the core model.
+% network. 
+% 
+% Ensure that the Gurobi MILP and LP solvers are working:
 
-initCobraToolbox
+test1 = changeCobraSolver('gurobi', 'MILP');
+test2 = changeCobraSolver('gurobi', 'LP');
+if test1 == 0 | test2 == 0
+    error('Gurobi v5+ not detected');
+end
+%% 
+% Load the core model:
+
 load('ecoli_core_model.mat', 'model');
 %% 
 % The biomass function is then removed from the model using the COBRA function 
@@ -72,12 +85,40 @@ model = removeRxns(model, bmName);
 % Running the algorithm on the modified _E. coli_ core model returns the 
 % calculated MinSpans for the network:
 
+tic
 minSpanVectors = detMinSpan(model);
+toc
 %% 
 % |minSpanVectors| is a matrix that consists of 23 linearly independent 
 % vectors. A further description of these vectors is provided and their comparison 
 % to Extreme Pathways [2] is provided in the Supplementary Material of Bordbar 
 % et al 2014 [1] (Section 1 and Figure S2).
+% 
+% Numerical properties of the stoichiometric matrix:
+
+[nMet,nRxn]=size(model.S)
+%% 
+% Independent dimensions of the right nullspace of the stoichiometric matrix
+
+fprintf('%s%g\n','Number of right nullspace basis vectors expected: ',nRxn-rank(full(model.S)))
+%% 
+% Numerical properties of the minSpan basis:
+
+[nRxn2,nMinSpanVectors]=size(minSpanVectors)
+%% 
+% Rank of the minSpanVectors
+
+fprintf('%s%g\n','Rank of minSpanVectors matrix:',rank(full(minSpanVectors)))
+%% 
+% Check the minSpan is really a basis for the nullspace:
+
+fprintf('%s%g\n','Should be zero: ',norm(model.S*minSpanVectors))
+fprintf('%s%g\n','Should be zero (?): ',norm(nRxn-rank(full(model.S))-rank(full(minSpanVectors))))
+%% 
+% Investigate the sparsity pattern of the minSpan basis:
+
+fprintf('%s%g\n','Sparsity ratio of minSpanVectors: ',nnz(minSpanVectors)/(nRxn2*nMinSpanVectors))
+spy(minSpanVectors)
 %% References
 % [1] Bordbar A, Nagarajan H, Lewis NE, Latif H, Ebrahim A, Federowicz S, Schellenberger 
 % J, Palsson BO. "Minimal metabolic pathway structure is consistent with associated 
@@ -86,3 +127,5 @@ minSpanVectors = detMinSpan(model);
 % [2] Schilling CH, Letscher D, Palsson BO. "Theory for the systemic definition 
 % of metabolic pathways and their use in interpreting metabolic function from 
 % a pathway-oriented perspective. _J Theor Biol _*203:*229-248 (2000).
+% 
+%
