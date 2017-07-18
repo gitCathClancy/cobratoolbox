@@ -1,7 +1,7 @@
 %% *Initialise and verify The COBRA Toolbox*
 % *Authors: Sylvain Arreckx, Luxembourg Centre for Systems Biomedicine*
 % 
-% *Reviewers: *
+% *Reviewers: Catherine Clancy, Luxembourg Centre for Systems Biomedicine*
 %% MATERIALS - EQUIPMENT SETUP
 % Please ensure that all the required dependencies of The COBRA Toolbox have 
 % been properly installed by following the requirements guide at <https://github.com/opencobra/cobratoolbox/blob/gh-pages/docs/requirements.html. 
@@ -9,7 +9,7 @@
 % In particular, |git| and |curl| must be installed.
 %% PROCEDURE 
 % At the start of each MATLAB session, The COBRA Toolbox must be initialised. 
-% Navigate to the directory where you installed The COBRA Toolbox and initialise 
+% Navigate to the directory where you installed The COBRA Toolbox and initialise: 
 
 initCobraToolbox
 %% 
@@ -38,13 +38,13 @@ end
 % for any method that uses flux balance analysis. 
 %% TROUBLESHOOTING
 % # Read the output of the initialisation script in the command window. Any 
-% warning or error messages, though often brief, will often point toward the source 
-% of the problem during initialisation if read literally. 
+% warning or error messages, though often brief, may point toward the source of 
+% the problem during initialisation if read literally. 
 % # Verify that all software versions are supported and have been correctly 
 % installed. 
 % # Ensure that you are using the latest version of The COBRA Toolbox by typing 
 % |updateCobraToolbox|
-% # Verify and test The COBRA Toolbox, as described in the "Verify and test 
+% # Verify and test The COBRA Toolbox, as described in the "Initialise and verify 
 % The COBRA Toolbox" tutorial. 
 % # Finally, if nothing else works, consult the COBRA Toolbox forum, as described 
 % in the "Engaging with The COBRA Toolbox community" tutorial.
@@ -56,7 +56,7 @@ end
 % installed are satisfactory. A table stating the solver compatibility and availability 
 % is printed to the user during initialisation. 
 % 
-% 2| Check the currently selected solvers with |changeCobraSolver|
+% 2| Check the currently selected solvers with |changeCobraSolver:|
 
 changeCobraSolver
 %% ANTICIPATED RESULTS 
